@@ -64,7 +64,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
     
     // Cache frequently used classes and methods
-    jclass localStreamClass = (*env)->FindClass(env, "org/contentauth/c2pa/Stream");
+    jclass localStreamClass = (*env)->FindClass(env, "com/guardian/c2pa/Stream");
     if (localStreamClass != NULL) {
         g_streamClass = (*env)->NewGlobalRef(env, localStreamClass);
         (*env)->DeleteLocalRef(env, localStreamClass);
@@ -77,7 +77,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     
     // SignerInfo class is no longer needed - parameters are passed directly
     
-    jclass localSignResultClass = (*env)->FindClass(env, "org/contentauth/c2pa/Builder$SignResult");
+    jclass localSignResultClass = (*env)->FindClass(env, "com/guardian/c2pa/Builder$SignResult");
     if (localSignResultClass != NULL) {
         g_signResultClass = (*env)->NewGlobalRef(env, localSignResultClass);
         (*env)->DeleteLocalRef(env, localSignResultClass);
@@ -412,21 +412,21 @@ static intptr_t java_signer_callback(const void *context, const unsigned char *d
 
 // Native methods implementation
 
-JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_version(JNIEnv *env, jclass clazz) {
+JNIEXPORT jstring JNICALL Java_com_guardian_c2pa_C2PA_version(JNIEnv *env, jclass clazz) {
     char *version = c2pa_version();
     jstring result = cstring_to_jstring(env, version);
     c2pa_string_free(version);
     return result;
 }
 
-JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_getError(JNIEnv *env, jclass clazz) {
+JNIEXPORT jstring JNICALL Java_com_guardian_c2pa_C2PA_getError(JNIEnv *env, jclass clazz) {
     char *error = c2pa_error();
     jstring result = cstring_to_jstring(env, error);
     c2pa_string_free(error);
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_C2PA_loadSettingsNative(JNIEnv *env, jclass clazz, jstring settings, jstring format) {
+JNIEXPORT jint JNICALL Java_com_guardian_c2pa_C2PA_loadSettingsNative(JNIEnv *env, jclass clazz, jstring settings, jstring format) {
     const char *csettings = jstring_to_cstring(env, settings);
     const char *cformat = jstring_to_cstring(env, format);
     
@@ -438,7 +438,7 @@ JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_C2PA_loadSettingsNative(JNIEnv 
     return result;
 }
 
-JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_readFileNative(JNIEnv *env, jclass clazz, jstring path, jstring dataDir) {
+JNIEXPORT jstring JNICALL Java_com_guardian_c2pa_C2PA_readFileNative(JNIEnv *env, jclass clazz, jstring path, jstring dataDir) {
     const char *cpath = jstring_to_cstring(env, path);
     const char *cdataDir = jstring_to_cstring(env, dataDir);
     
@@ -452,7 +452,7 @@ JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_readFileNative(JNIEnv *
     return jresult;
 }
 
-JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_readIngredientFileNative(JNIEnv *env, jclass clazz, jstring path, jstring dataDir) {
+JNIEXPORT jstring JNICALL Java_com_guardian_c2pa_C2PA_readIngredientFileNative(JNIEnv *env, jclass clazz, jstring path, jstring dataDir) {
     const char *cpath = jstring_to_cstring(env, path);
     const char *cdataDir = jstring_to_cstring(env, dataDir);
     
@@ -466,7 +466,7 @@ JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_readIngredientFileNativ
     return jresult;
 }
 
-JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_signFileNative(JNIEnv *env, jclass clazz, jstring sourcePath, jstring destPath, jstring manifest, jstring algorithm, jstring certificatePEM, jstring privateKeyPEM, jstring tsaURL, jstring dataDir) {
+JNIEXPORT jstring JNICALL Java_com_guardian_c2pa_C2PA_signFileNative(JNIEnv *env, jclass clazz, jstring sourcePath, jstring destPath, jstring manifest, jstring algorithm, jstring certificatePEM, jstring privateKeyPEM, jstring tsaURL, jstring dataDir) {
     if (sourcePath == NULL || destPath == NULL || manifest == NULL || algorithm == NULL || certificatePEM == NULL || privateKeyPEM == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Required parameters cannot be null");
@@ -519,7 +519,7 @@ JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_C2PA_signFileNative(JNIEnv *
 }
 
 // Stream native methods
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Stream_createStreamNative(JNIEnv *env, jobject obj) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Stream_createStreamNative(JNIEnv *env, jobject obj) {
     JavaStreamContext *ctx = (JavaStreamContext*)calloc(1, sizeof(JavaStreamContext));
     if (ctx == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/OutOfMemoryError"), 
@@ -565,7 +565,7 @@ JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Stream_createStreamNative(JNIE
     return (jlong)(uintptr_t)stream;
 }
 
-JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Stream_releaseStreamNative(JNIEnv *env, jobject obj, jlong streamPtr) {
+JNIEXPORT void JNICALL Java_com_guardian_c2pa_Stream_releaseStreamNative(JNIEnv *env, jobject obj, jlong streamPtr) {
     if (streamPtr != 0) {
         struct C2paStream *stream = (struct C2paStream*)(uintptr_t)streamPtr;
         // Free the Java context
@@ -582,7 +582,7 @@ JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Stream_releaseStreamNative(JNIE
 }
 
 // Reader native methods
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Reader_fromStreamNative(JNIEnv *env, jclass clazz, jstring format, jlong streamPtr) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Reader_fromStreamNative(JNIEnv *env, jclass clazz, jstring format, jlong streamPtr) {
     if (format == NULL || streamPtr == 0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Format and stream cannot be null");
@@ -607,7 +607,7 @@ JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Reader_fromStreamNative(JNIEnv
     return (jlong)(uintptr_t)reader;
 }
 
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Reader_fromManifestDataAndStreamNative(JNIEnv *env, jclass clazz, jstring format, jlong streamPtr, jbyteArray manifestData) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Reader_fromManifestDataAndStreamNative(JNIEnv *env, jclass clazz, jstring format, jlong streamPtr, jbyteArray manifestData) {
     if (format == NULL || streamPtr == 0 || manifestData == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Format, stream, and manifest data cannot be null");
@@ -651,13 +651,13 @@ JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Reader_fromManifestDataAndStre
     return (jlong)(uintptr_t)reader;
 }
 
-JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Reader_free(JNIEnv *env, jobject obj, jlong readerPtr) {
+JNIEXPORT void JNICALL Java_com_guardian_c2pa_Reader_free(JNIEnv *env, jobject obj, jlong readerPtr) {
     if (readerPtr != 0) {
         c2pa_reader_free((struct C2paReader*)(uintptr_t)readerPtr);
     }
 }
 
-JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_Reader_toJsonNative(JNIEnv *env, jobject obj, jlong readerPtr) {
+JNIEXPORT jstring JNICALL Java_com_guardian_c2pa_Reader_toJsonNative(JNIEnv *env, jobject obj, jlong readerPtr) {
     if (readerPtr == 0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalStateException"), 
                          "Reader is not initialized");
@@ -677,7 +677,7 @@ JNIEXPORT jstring JNICALL Java_org_contentauth_c2pa_Reader_toJsonNative(JNIEnv *
     return result;
 }
 
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Reader_resourceToStreamNative(JNIEnv *env, jobject obj, jlong readerPtr, jstring uri, jlong streamPtr) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Reader_resourceToStreamNative(JNIEnv *env, jobject obj, jlong readerPtr, jstring uri, jlong streamPtr) {
     if (readerPtr == 0 || uri == NULL || streamPtr == 0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Reader, URI, and stream cannot be null");
@@ -700,7 +700,7 @@ JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Reader_resourceToStreamNative(
 }
 
 // Builder native methods
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Builder_nativeFromJson(JNIEnv *env, jclass clazz, jstring manifestJson) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Builder_nativeFromJson(JNIEnv *env, jclass clazz, jstring manifestJson) {
     if (manifestJson == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Manifest JSON cannot be null");
@@ -723,7 +723,7 @@ JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Builder_nativeFromJson(JNIEnv 
     return (jlong)(uintptr_t)builder;
 }
 
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Builder_nativeFromArchive(JNIEnv *env, jclass clazz, jlong streamPtr) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Builder_nativeFromArchive(JNIEnv *env, jclass clazz, jlong streamPtr) {
     if (streamPtr == 0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Stream cannot be null");
@@ -741,13 +741,13 @@ JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Builder_nativeFromArchive(JNIE
     return (jlong)(uintptr_t)builder;
 }
 
-JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Builder_free(JNIEnv *env, jobject obj, jlong builderPtr) {
+JNIEXPORT void JNICALL Java_com_guardian_c2pa_Builder_free(JNIEnv *env, jobject obj, jlong builderPtr) {
     if (builderPtr != 0) {
         c2pa_builder_free((struct C2paBuilder*)(uintptr_t)builderPtr);
     }
 }
 
-JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Builder_setNoEmbedNative(JNIEnv *env, jobject obj, jlong builderPtr) {
+JNIEXPORT void JNICALL Java_com_guardian_c2pa_Builder_setNoEmbedNative(JNIEnv *env, jobject obj, jlong builderPtr) {
     if (builderPtr == 0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalStateException"), 
                          "Builder is not initialized");
@@ -757,7 +757,7 @@ JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Builder_setNoEmbedNative(JNIEnv
     c2pa_builder_set_no_embed((struct C2paBuilder*)(uintptr_t)builderPtr);
 }
 
-JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_Builder_setRemoteUrlNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring remoteUrl) {
+JNIEXPORT jint JNICALL Java_com_guardian_c2pa_Builder_setRemoteUrlNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring remoteUrl) {
     if (builderPtr == 0 || remoteUrl == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Builder and remote URL cannot be null");
@@ -774,7 +774,7 @@ JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_Builder_setRemoteUrlNative(JNIE
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_Builder_addResourceNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring uri, jlong streamPtr) {
+JNIEXPORT jint JNICALL Java_com_guardian_c2pa_Builder_addResourceNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring uri, jlong streamPtr) {
     const char *curi = jstring_to_cstring(env, uri);
     struct C2paStream *stream = (struct C2paStream*)(uintptr_t)streamPtr;
     int result = c2pa_builder_add_resource((struct C2paBuilder*)(uintptr_t)builderPtr, curi, stream);
@@ -782,7 +782,7 @@ JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_Builder_addResourceNative(JNIEn
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_Builder_addIngredientFromStreamNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring ingredientJson, jstring format, jlong streamPtr) {
+JNIEXPORT jint JNICALL Java_com_guardian_c2pa_Builder_addIngredientFromStreamNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring ingredientJson, jstring format, jlong streamPtr) {
     const char *cingredientJson = jstring_to_cstring(env, ingredientJson);
     const char *cformat = jstring_to_cstring(env, format);
     struct C2paStream *stream = (struct C2paStream*)(uintptr_t)streamPtr;
@@ -797,13 +797,13 @@ JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_Builder_addIngredientFromStream
     return result;
 }
 
-JNIEXPORT jint JNICALL Java_org_contentauth_c2pa_Builder_toArchiveNative(JNIEnv *env, jobject obj, jlong builderPtr, jlong streamPtr) {
+JNIEXPORT jint JNICALL Java_com_guardian_c2pa_Builder_toArchiveNative(JNIEnv *env, jobject obj, jlong builderPtr, jlong streamPtr) {
     struct C2paBuilder *builder = (struct C2paBuilder*)(uintptr_t)builderPtr;
     struct C2paStream *stream = (struct C2paStream*)(uintptr_t)streamPtr;
     return c2pa_builder_to_archive(builder, stream);
 }
 
-JNIEXPORT jobject JNICALL Java_org_contentauth_c2pa_Builder_signNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring format, jlong sourceStreamPtr, jlong destStreamPtr, jlong signerPtr) {
+JNIEXPORT jobject JNICALL Java_com_guardian_c2pa_Builder_signNative(JNIEnv *env, jobject obj, jlong builderPtr, jstring format, jlong sourceStreamPtr, jlong destStreamPtr, jlong signerPtr) {
     if (builderPtr == 0 || format == NULL || sourceStreamPtr == 0 || destStreamPtr == 0 || signerPtr == 0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Builder, format, streams, and signer cannot be null");
@@ -833,7 +833,7 @@ JNIEXPORT jobject JNICALL Java_org_contentauth_c2pa_Builder_signNative(JNIEnv *e
     // Create result object
     jclass resultClass = g_signResultClass;
     if (resultClass == NULL) {
-        resultClass = (*env)->FindClass(env, "org/contentauth/c2pa/Builder$SignResult");
+        resultClass = (*env)->FindClass(env, "com/guardian/c2pa/Builder$SignResult");
         if (resultClass == NULL) {
             check_exception(env);
             if (manifestBytes != NULL) {
@@ -878,7 +878,7 @@ JNIEXPORT jobject JNICALL Java_org_contentauth_c2pa_Builder_signNative(JNIEnv *e
 }
 
 // New Builder methods
-JNIEXPORT jbyteArray JNICALL Java_org_contentauth_c2pa_Builder_dataHashedPlaceholderNative(JNIEnv *env, jobject obj, jlong builderPtr, jlong reservedSize, jstring format) {
+JNIEXPORT jbyteArray JNICALL Java_com_guardian_c2pa_Builder_dataHashedPlaceholderNative(JNIEnv *env, jobject obj, jlong builderPtr, jlong reservedSize, jstring format) {
     if (builderPtr == 0 || format == NULL || reservedSize <= 0) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Builder, format cannot be null and reserved size must be positive");
@@ -917,7 +917,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_contentauth_c2pa_Builder_dataHashedPlaceho
     return result;
 }
 
-JNIEXPORT jbyteArray JNICALL Java_org_contentauth_c2pa_Builder_signDataHashedEmbeddableNative(JNIEnv *env, jobject obj, jlong builderPtr, jlong signerPtr, jstring dataHash, jstring format, jlong assetPtr) {
+JNIEXPORT jbyteArray JNICALL Java_com_guardian_c2pa_Builder_signDataHashedEmbeddableNative(JNIEnv *env, jobject obj, jlong builderPtr, jlong signerPtr, jstring dataHash, jstring format, jlong assetPtr) {
     struct C2paBuilder *builder = (struct C2paBuilder*)(uintptr_t)builderPtr;
     struct C2paSigner *signer = (struct C2paSigner*)(uintptr_t)signerPtr;
     const char *cdataHash = jstring_to_cstring(env, dataHash);
@@ -942,7 +942,7 @@ JNIEXPORT jbyteArray JNICALL Java_org_contentauth_c2pa_Builder_signDataHashedEmb
 }
 
 // Signer native methods
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Signer_nativeFromInfo(JNIEnv *env, jclass clazz, jstring algorithm, jstring certificatePEM, jstring privateKeyPEM, jstring tsaURL) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Signer_nativeFromInfo(JNIEnv *env, jclass clazz, jstring algorithm, jstring certificatePEM, jstring privateKeyPEM, jstring tsaURL) {
     if (algorithm == NULL || certificatePEM == NULL || privateKeyPEM == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Required parameters cannot be null");
@@ -1026,7 +1026,7 @@ static void unregister_signer_context(struct C2paSigner *signer) {
     pthread_mutex_unlock(&g_signerContextsMutex);
 }
 
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Signer_nativeFromCallback(JNIEnv *env, jclass clazz, jstring algorithm, jstring certificateChain, jstring tsaURL, jobject callback) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Signer_nativeFromCallback(JNIEnv *env, jclass clazz, jstring algorithm, jstring certificateChain, jstring tsaURL, jobject callback) {
     if (algorithm == NULL || certificateChain == NULL || callback == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Required parameters cannot be null");
@@ -1113,11 +1113,11 @@ JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Signer_nativeFromCallback(JNIE
     return (jlong)(uintptr_t)signer;
 }
 
-JNIEXPORT jlong JNICALL Java_org_contentauth_c2pa_Signer_reserveSizeNative(JNIEnv *env, jobject obj, jlong signerPtr) {
+JNIEXPORT jlong JNICALL Java_com_guardian_c2pa_Signer_reserveSizeNative(JNIEnv *env, jobject obj, jlong signerPtr) {
     return c2pa_signer_reserve_size((struct C2paSigner*)(uintptr_t)signerPtr);
 }
 
-JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Signer_free(JNIEnv *env, jobject obj, jlong signerPtr) {
+JNIEXPORT void JNICALL Java_com_guardian_c2pa_Signer_free(JNIEnv *env, jobject obj, jlong signerPtr) {
     if (signerPtr != 0) {
         struct C2paSigner *signer = (struct C2paSigner*)(uintptr_t)signerPtr;
         
@@ -1129,7 +1129,7 @@ JNIEXPORT void JNICALL Java_org_contentauth_c2pa_Signer_free(JNIEnv *env, jobjec
 }
 
 // Ed25519 signing
-JNIEXPORT jbyteArray JNICALL Java_org_contentauth_c2pa_C2PA_ed25519SignNative(JNIEnv *env, jclass clazz, jbyteArray data, jstring privateKey) {
+JNIEXPORT jbyteArray JNICALL Java_com_guardian_c2pa_C2PA_ed25519SignNative(JNIEnv *env, jclass clazz, jbyteArray data, jstring privateKey) {
     if (data == NULL || privateKey == NULL) {
         (*env)->ThrowNew(env, (*env)->FindClass(env, "java/lang/IllegalArgumentException"), 
                          "Data and private key cannot be null");

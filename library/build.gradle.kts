@@ -22,7 +22,7 @@ plugins {
 }
 
 android {
-    namespace = "org.contentauth.c2pa"
+    namespace = "com.guardian.c2pa"
     compileSdk = 36
 
     defaultConfig {
@@ -178,7 +178,9 @@ publishing {
     }
 }
 
-// Native library download configuration
+// Native library configuration
+val buildFromSource = System.getenv("BUILD_FROM_SOURCE") == "true"
+val githubOrg = System.getenv("GITHUB_ORG") ?: "LuckyOkoedion"
 val c2paVersion = project.properties["c2paVersion"] as String
 val architectures =
     mapOf(
@@ -196,11 +198,22 @@ tasks.register("setupDirectories") {
     }
 }
 
-tasks.register("downloadNativeLibraries") {
-    dependsOn("setupDirectories")
-
     doLast {
-        println("Using C2PA version: $c2paVersion")
+        if (buildFromSource) {
+            println("BUILD_FROM_SOURCE=true detected. Skipping download and checking for local binaries...")
+            var missing = false
+            architectures.keys.forEach { arch ->
+                if (!file("src/main/jniLibs/$arch/libc2pa_c.so").exists()) {
+                    missing = true
+                }
+            }
+            if (missing) {
+                throw GradleException("Local binaries missing in src/main/jniLibs/. Please run 'make android-libs' first.")
+            }
+            return@doLast
+        }
+
+        println("Using C2PA version: $c2paVersion (from $githubOrg)")
         val downloadDir = file("$rootDir/downloads")
         downloadDir.mkdirs()
 
@@ -218,7 +231,7 @@ tasks.register("downloadNativeLibraries") {
 
                 // Download the zip file
                 val url =
-                    "https://github.com/contentauth/c2pa-rs/releases/download/c2pa-$c2paVersion/c2pa-$c2paVersion-$target.zip"
+                    "https://github.com/$githubOrg/c2pa-rs/releases/download/c2pa-$c2paVersion/c2pa-$c2paVersion-$target.zip"
                 println("Downloading from: $url")
                 ant.invokeMethod(
                     "get",

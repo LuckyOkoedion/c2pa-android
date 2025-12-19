@@ -10,7 +10,7 @@ files for the specific language governing permissions and limitations under
 each license.
 */
 
-package org.contentauth.c2pa
+package com.guardian.c2pa
 
 import android.util.Base64
 import kotlinx.serialization.Serializable

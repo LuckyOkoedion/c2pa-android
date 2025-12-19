@@ -5,6 +5,13 @@
 # Default target
 all: library
 
+# Rust/NDK Build Variables
+CARGO_NDK := cargo ndk
+RS_FFI_DIR := c2pa-rs/c2pa_c_ffi
+TARGET_OS := android
+ARCHS := arm64-v8a armeabi-v7a x86_64 x86
+NDK_TARGETS := aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+
 # Setup directories using Gradle task
 setup:
 	@echo "Setting up directories..."
@@ -14,6 +21,29 @@ setup:
 download-binaries:
 	@echo "Downloading pre-built binaries..."
 	@./gradlew :library:downloadNativeLibraries
+
+# Build native libs from source using cargo-ndk
+android-libs:
+	@echo "Building native Rust libraries for Android..."
+	@for i in 1 2 3 4; do \
+		ARCH=$$(echo $(ARCHS) | cut -d' ' -f$$i); \
+		TARGET=$$(echo $(NDK_TARGETS) | cut -d' ' -f$$i); \
+		echo "  Building for $$ARCH ($$TARGET)..."; \
+		cd $(RS_FFI_DIR) && $(CARGO_NDK) -t $$TARGET -o ../../library/src/main/jniLibs/ build; \
+		cd ../..; \
+	done
+	@echo "✓ Native libraries built and placed in library/src/main/jniLibs/"
+
+release-android-libs:
+	@echo "Building release native Rust libraries for Android..."
+	@for i in 1 2 3 4; do \
+		ARCH=$$(echo $(ARCHS) | cut -d' ' -f$$i); \
+		TARGET=$$(echo $(NDK_TARGETS) | cut -d' ' -f$$i); \
+		echo "  Building release for $$ARCH ($$TARGET)..."; \
+		cd $(RS_FFI_DIR) && $(CARGO_NDK) -t $$TARGET -o ../../library/src/main/jniLibs/ build --release; \
+		cd ../..; \
+	done
+	@echo "✓ Release native libraries built."
 
 # Complete library build: setup, download binaries, and build
 library: setup download-binaries
