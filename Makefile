@@ -29,7 +29,7 @@ android-libs:
 		ARCH=$$(echo $(ARCHS) | cut -d' ' -f$$i); \
 		TARGET=$$(echo $(NDK_TARGETS) | cut -d' ' -f$$i); \
 		echo "  Building for $$ARCH ($$TARGET)..."; \
-		cd $(RS_FFI_DIR) && $(CARGO_NDK) -t $$TARGET -o ../../library/src/main/jniLibs/ build; \
+		cd $(RS_FFI_DIR) && $(CARGO_NDK) -t $$TARGET -o ../../library/src/main/jniLibs/ build --features rust_native_crypto; \
 		cd ../..; \
 	done
 	@echo "✓ Native libraries built and placed in library/src/main/jniLibs/"
@@ -40,7 +40,7 @@ release-android-libs:
 		ARCH=$$(echo $(ARCHS) | cut -d' ' -f$$i); \
 		TARGET=$$(echo $(NDK_TARGETS) | cut -d' ' -f$$i); \
 		echo "  Building release for $$ARCH ($$TARGET)..."; \
-		cd $(RS_FFI_DIR) && $(CARGO_NDK) -t $$TARGET -o ../../library/src/main/jniLibs/ build --release; \
+		cd $(RS_FFI_DIR) && $(CARGO_NDK) -t $$TARGET -o ../../library/src/main/jniLibs/ build --release --features rust_native_crypto; \
 		cd ../..; \
 	done
 	@echo "✓ Release native libraries built."
@@ -79,13 +79,13 @@ example-app:
 run-test-app:
 	@echo "Installing and running test app..."
 	@./gradlew :test-app:app:installDebug
-	@adb shell am start -n org.contentauth.c2pa.testapp/org.contentauth.c2pa.testapp.MainActivity
+	@adb shell am start -n com.guardian.c2pa.testapp/com.guardian.c2pa.testapp.MainActivity
 
 # Run example app
 run-example-app:
 	@echo "Installing and running example app..."
 	@./gradlew :example-app:app:installDebug
-	@adb shell am start -n org.contentauth.c2pa.exampleapp/org.contentauth.c2pa.exampleapp.MainActivity
+	@adb shell am start -n com.guardian.c2pa.exampleapp/com.guardian.c2pa.exampleapp.MainActivity
 
 # Publish library to GitHub packages
 publish:
