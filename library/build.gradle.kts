@@ -294,4 +294,4 @@ tasks.register("cleanDownloadedLibraries") {
 }
 
 // Hook into clean task
-tasks.named("clean") { dependsOn("cleanDownloadedLibraries") }
+// tasks.named("clean") { dependsOn("cleanDownloadedLibraries") }
